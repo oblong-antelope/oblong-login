@@ -11,9 +11,9 @@ var bodyParser = require('body-parser');
 
 
 //INITIAL DB SETUP
-redis_client.flushdb(function(err, succ){
-    console.log(succ);
-});
+//redis_client.flushdb(function(err, succ){
+//    console.log(succ);
+//});
 
 redis_client.set(sha2('e.williamson@ic.ac.uk' + ':::' + 'bubbles123'),
     JSON.stringify({
