@@ -59,6 +59,7 @@ app.post('/api/login', function(request, result){
     var key = request.email + ':::' + request.password;
 
     redis_client.keys(key, function(err, reply){
+        console.log(reply);
         if(reply!=null){
             console.log('success!');
             var dataFromRequest = {email:request.email, password:request.password};
