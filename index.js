@@ -65,6 +65,8 @@ app.post('/api/login', function(request, result){
 
     var key = request.email + ':::' + request.password;
 
+    console.log(sha2(key));
+
     redis_client.get(sha2(key), function(err, reply){
         console.log('aaaaaareply' + reply);
         if(reply!=null && reply!=={}){
@@ -104,13 +106,16 @@ app.post('/api/newuser', function(request, result){
     });
 
 
-    redis_client.set(sha2(request.email + ':::' + request.password),
+    var userUniqueKey = sha2(request.email + ':::' + request.password);
+
+    redis_client.set(userUniqueKey,
         JSON.stringify({
             title:request.title,
             firstname:request.firstname,
             lastname:request.lastname
         }), function(err, succ){
-            console.log(succ);
+            console.log('set user successfully ' + request.email + ' ' + request.password);
+            console.log('new user sha is ' + userUniqueKey)
     });
 
     result.end(JSON.stringify({
