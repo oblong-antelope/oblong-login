@@ -97,7 +97,7 @@ app.post('/api/logout', function(request, result){
         'Content-Type': 'text/plain'
     });
     redis_client.del('TOKE' + request.body.jwt, function(err, succ){
-        console.log('logged out successfully  >>' + err + "  " + succ);
+        console.log(request.body.jwt + 'logged out successfully  >>' + err + "  " + succ);
     });
     result.end(JSON.stringify({
         success: true
