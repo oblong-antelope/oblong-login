@@ -1,4 +1,5 @@
 var express = require('express');
+var jwt = require('jwt-simple');
 var captchapng = require('captchapng');
 var sha2 = require('js-sha256').sha256;
 var redis_client = require('redis').createClient(process.env.REDIS_URL);
@@ -14,11 +15,25 @@ redis_client.flushdb(function(err, succ){
     console.log(succ);
 });
 
-redis_client.set('USERXXX' + sha2('user:pass'), 'true', function(err, succ){
+redis_client.set(sha2('e.williamson@ic.ac.uk' + ':::' + 'bubbles123'),
+    {
+        title:'Miss',
+        firstname:'Emily',
+        lastname:'Williamson'
+    }, function(err, succ){
     console.log(succ);
 });
 
 //END OF INITIAL DB SETUP
+
+
+
+var payload = { email: 'abc@def.ghi', password: 'ilovethemonkeyhead' };
+var secret = 'xxx';
+
+var token = jwt.encode(payload, secret);
+
+var decoded = jwt.decode(token, secret);
 
 
 

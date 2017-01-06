@@ -17,6 +17,11 @@
   },
   "homepage": "https://github.com/oblong-antelope/oblong-login#readme",
   "dependencies": {
-    "express": "^4.14.0"
+    "body-parser": "^1.15.2",
+    "captchapng": "0.0.1",
+    "express": "^4.14.0",
+    "js-sha256": "^0.3.2",
+    "jwt-simple": "^0.5.1",
+    "redis": "^2.6.3"
   }
 }
