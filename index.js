@@ -65,7 +65,7 @@ app.post('/api/login', function(request, result){
 
     var key = request.email + ':::' + request.password;
 
-    redis_client.keys(sha2(key), function(err, reply){
+    redis_client.get(sha2(key), function(err, reply){
         console.log(reply);
         if(reply!==[]){
             console.log('success!');
