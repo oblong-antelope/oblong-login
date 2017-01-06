@@ -44,6 +44,8 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 ////////////////////////////////////////////////////
 
+//app.options('')
+
 app.get('/', function(request, result){
 });
 
