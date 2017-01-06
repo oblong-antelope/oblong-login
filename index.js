@@ -71,10 +71,11 @@ app.post('/api/login', function(request, result){
             console.log('success!');
             var dataFromRequest = {email:request.body.email, password:request.body.password};
             var token = jwt.encode(dataFromRequest, secret);
+            var rep = JSON.parse(reply);
             result.end(JSON.stringify({
                 success: true,
                 jwt: token,
-                tokendata: reply
+                tokendata: rep
             }));
 
             redis_client.set('TOKE' + token, reply, function(err, succ){
