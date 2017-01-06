@@ -79,7 +79,9 @@ app.post('/api/login', function(request, result){
             }));
 
             redis_client.set('TOKE' + token, reply, function(err, succ){
-                console.log('set token successfully t:' + token + ' id:' + '33');
+                if(err!=null) {
+                    console.log('TOKEN ' + token + ' created,\n\t\tREASON: logged in successfully.');
+                }
             });
         }else{
             console.log('fail!');
@@ -97,11 +99,17 @@ app.post('/api/logout', function(request, result){
         'Content-Type': 'text/plain'
     });
     redis_client.del('TOKE' + request.body.jwt, function(err, succ){
-        console.log(request.body.jwt + 'logged out successfully  >>' + err + "  " + succ);
+        console.log('TOKEN ' + request.body.jwt + ' invalidated,\n\t\tREASON: logged out successfully.');
+        if(err!=null){
+            result.end(JSON.stringify({
+                success: true
+            }));
+        }else{
+            result.end(JSON.stringify({
+                success: false
+            }));
+        }
     });
-    result.end(JSON.stringify({
-        success: true
-    }));
 });
 
 app.post('/api/newuser', function(request, result){
@@ -121,24 +129,34 @@ app.post('/api/newuser', function(request, result){
             lastname:request.body.lastname,
             userid:'33'
         }), function(err, succ){
-            console.log('set user successfully e:' + request.body.email + ' p:' + request.body.password);
-            console.log('new user sha is ' + userUniqueKey);
+            if(err!=null){
+                console.log('Created user successfully e:' + request.body.email + ' p:' + request.body.password);
+                console.log('new user sha is ' + userUniqueKey);
+                console.log('\n\t\tREASON: user created successfully');
+                result.end(JSON.stringify({
+                    success: true
+                }));
+            }else{
+                result.end(JSON.stringify({
+                    success: false
+                }));
+            }
     });
-
-    result.end(JSON.stringify({
-        success: true
-    }));
 });
 
 app.post('/api/tokendata', function(request, result){
     result.header('Access-Control-Allow-Origin', '*');
     result.header('Access-Control-Allow-Methods', 'POST');
-    result.writeHead(200, {
-        'Content-Type': 'text/plain'
-    });
 
     redis_client.get('TOKE' + request.body.jwt, function(err, reply){
-        result.end(reply);
+        if(reply!=null) {
+            console.log('Token data accessed.' + request.body.jwt + '\n\t\tREASON: user access success');
+            result.writeHead(200, {'Content-Type': 'text/plain'});
+            result.end(reply);
+        }else{
+            result.writeHead(204, {'Content-Type': 'text/plain'});
+            result.end("TOKEN DOES NOT EXIST");
+        }
     });
 });
 
