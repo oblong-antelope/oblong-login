@@ -45,15 +45,12 @@ app.use(bodyParser.json());
 ////////////////////////////////////////////////////
 
 
+//REMEMBER TO COPY PASTE THIS app.options block into relentless and onslaught
 app.options("/*", function(req, res, next){
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
     res.send(200);
-});
-
-
-app.get('/', function(request, result){
 });
 
 app.post('/api/login', function(request, result){
@@ -63,12 +60,12 @@ app.post('/api/login', function(request, result){
         'Content-Type': 'text/plain'
     });
 
-    console.log('request ' + request.body.email + ' ' + request.body.password);
+    console.log('request login for e:' + request.body.email + ' p:' + request.body.password);
     var key = request.body.email + ':::' + request.body.password;
 
     console.log(sha2(key));
 
-    redis_client.get(sha2(key), function(err, reply){
+    redis_client.get('USER' + sha2(key), function(err, reply){
         console.log('aaaaaareply' + reply);
         if(reply!=null && reply!=={}){
             console.log('success!');
@@ -79,6 +76,13 @@ app.post('/api/login', function(request, result){
                 jwt: token,
                 userid: '33'
             }));
+
+            redis_client.set('TOKE' + token,
+                JSON.stringify({
+                    userid: '33'
+                }), function(err, succ){
+                    console.log('set token successfully t:' + token + ' id:' + '33');
+            });
         }else{
             console.log('fail!');
             result.end(JSON.stringify({
@@ -93,6 +97,9 @@ app.post('/api/logout', function(request, result){
     result.header('Access-Control-Allow-Methods', 'POST');
     result.writeHead(200, {
         'Content-Type': 'text/plain'
+    });
+    redis_client.del('TOKE' + request.body.jwt, function(err, succ){
+        console.log('logged out successfully');
     });
     result.end(JSON.stringify({
         success: true
@@ -109,13 +116,13 @@ app.post('/api/newuser', function(request, result){
 
     var userUniqueKey = sha2(request.body.email + ':::' + request.body.password);
 
-    redis_client.set(userUniqueKey,
+    redis_client.set('USER' + userUniqueKey,
         JSON.stringify({
             title:request.body.title,
             firstname:request.body.firstname,
             lastname:request.body.lastname
         }), function(err, succ){
-            console.log('set user successfully ' + request.body.email + ' ' + request.body.password);
+            console.log('set user successfully e:' + request.body.email + ' p:' + request.body.password);
             console.log('new user sha is ' + userUniqueKey);
     });
 
@@ -124,67 +131,18 @@ app.post('/api/newuser', function(request, result){
     }));
 });
 
-app.post('/captcha/', function(request, result){
-    console.log('POST received');
-
+app.post('/api/userid', function(request, result){
     result.header('Access-Control-Allow-Origin', '*');
     result.header('Access-Control-Allow-Methods', 'POST');
+    result.writeHead(200, {
+        'Content-Type': 'text/plain'
+    });
 
-    var d = new Date();
-
-    if(request.body.request === 'captcha') {
-        var hash = d.getTime().toString().substring(0,7);
-        var cypherkey = sha2(hash);
-        var captcha = parseInt(cypherkey.substring(0, 5), 16);
-        var p = new captchapng(240, 90, captcha);
-        p.color(0, 0, 0, 0);
-        p.color(80, 80, 80, 255);
-
-        var img = p.getBase64();
-        var imgbase64 = new Buffer(img,'base64');
-        result.writeHead(200, {
-            'Content-Type': 'image/png'
-        });
-        result.end(imgbase64.toString('base64'));
-    }else if(request.body.request === 'verify'){
-        /*{
-         request: 'verify',
-         attempt: $('#iconCaptcha').val(),
-         fullname: $('#iconFullName').val(),
-         alias: $('#iconAlias').val(),
-         pass: $('#iconPassword').val(),
-         retypepass: $('#iconRetypePassword').val()
-         }*/
-        var oldHash = (d.getTime()-1000000).toString().substring(0,7);
-        var oldCypherkey = sha2(oldHash);
-        var oldCaptcha = parseInt(oldCypherkey.substring(0, 5), 16);
-        var newHash = d.getTime().toString().substring(0,7);
-        var newCypherkey = sha2(newHash);
-        var newCaptcha = parseInt(newCypherkey.substring(0, 5), 16);
-        if((request.body.attempt === newCaptcha.toString() ||
-            request.body.attempt === oldCaptcha.toString()) &&
-            request.body.pass === request.body.retypepass &&
-            request.body.pass !== '' &&
-            request.body.alias !== '' &&
-            request.body.fullname !== ''){
-            result.send(JSON.stringify({
-                status:'success'
-            }));
-            console.log('user details + captcha = success');
-
-            var key = request.body.alias + sha2(request.body.pass);
-            var value = request.body.fullname + d.getTime();
-            redis_client.set(key, value, function(err, succ){
-                console.log(succ);
-            });
-
-        }else{
-            result.send(JSON.stringify({
-                status:'failure'
-            }));
-            console.log('user details + captcha = failure');
-        }
-    }
+    redis_client.get('TOKE' + request.body.jwt, function(err, reply){
+        result.end(JSON.stringify({
+            'userid': reply
+        }));
+    });
 });
 
 
