@@ -56,12 +56,14 @@ app.options("/*", function(req, res, next){
 app.get('/', function(request, result){
 });
 
-app.post('/api/login', function(request, result){
+app.post('/api/login', function(req, result){
     result.header('Access-Control-Allow-Origin', '*');
     result.header('Access-Control-Allow-Methods', 'POST');
     result.writeHead(200, {
         'Content-Type': 'text/plain'
     });
+
+    var request = JSON.parse(req);
 
     var key = request.email + ':::' + request.password;
 
@@ -98,13 +100,14 @@ app.post('/api/logout', function(request, result){
     }));
 });
 
-app.post('/api/newuser', function(request, result){
+app.post('/api/newuser', function(req, result){
     result.header('Access-Control-Allow-Origin', '*');
     result.header('Access-Control-Allow-Methods', 'POST');
     result.writeHead(200, {
         'Content-Type': 'text/plain'
     });
 
+    var request = JSON.parse(req);
 
     var userUniqueKey = sha2(request.email + ':::' + request.password);
 
