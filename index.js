@@ -74,13 +74,11 @@ app.post('/api/login', function(request, result){
             result.end(JSON.stringify({
                 success: true,
                 jwt: token,
-                userid: '33'
+                tokendata: reply
             }));
 
             redis_client.set('TOKE' + token,
-                JSON.stringify({
-                    userid: '33'
-                }), function(err, succ){
+                JSON.stringify(reply), function(err, succ){
                     console.log('set token successfully t:' + token + ' id:' + '33');
             });
         }else{
@@ -120,7 +118,8 @@ app.post('/api/newuser', function(request, result){
         JSON.stringify({
             title:request.body.title,
             firstname:request.body.firstname,
-            lastname:request.body.lastname
+            lastname:request.body.lastname,
+            userid:'33'
         }), function(err, succ){
             console.log('set user successfully e:' + request.body.email + ' p:' + request.body.password);
             console.log('new user sha is ' + userUniqueKey);
@@ -131,7 +130,7 @@ app.post('/api/newuser', function(request, result){
     }));
 });
 
-app.post('/api/userid', function(request, result){
+app.post('/api/tokendata', function(request, result){
     result.header('Access-Control-Allow-Origin', '*');
     result.header('Access-Control-Allow-Methods', 'POST');
     result.writeHead(200, {
