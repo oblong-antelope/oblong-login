@@ -63,6 +63,7 @@ app.post('/api/login', function(request, result){
         'Content-Type': 'text/plain'
     });
 
+    console.log('request ' + request.body.email + ' ' + request.body.password);
     var key = request.body.email + ':::' + request.body.password;
 
     console.log(sha2(key));
@@ -115,7 +116,7 @@ app.post('/api/newuser', function(request, result){
             lastname:request.body.lastname
         }), function(err, succ){
             console.log('set user successfully ' + request.body.email + ' ' + request.body.password);
-            console.log('new user sha is ' + userUniqueKey)
+            console.log('new user sha is ' + userUniqueKey);
     });
 
     result.end(JSON.stringify({
