@@ -77,9 +77,8 @@ app.post('/api/login', function(request, result){
                 tokendata: reply
             }));
 
-            redis_client.set('TOKE' + token,
-                JSON.stringify(reply), function(err, succ){
-                    console.log('set token successfully t:' + token + ' id:' + '33');
+            redis_client.set('TOKE' + token, reply, function(err, succ){
+                console.log('set token successfully t:' + token + ' id:' + '33');
             });
         }else{
             console.log('fail!');
