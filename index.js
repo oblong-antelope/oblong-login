@@ -61,7 +61,7 @@ app.post('/api/login', function(request, result){
     redis_client.keys(key, function(err, reply){
         if(reply!=null){
             console.log('success!');
-            var dataFromRequest = JSON.parse(request);
+            var dataFromRequest = {email:request.email, password:request.password};
             var token = jwt.encode(dataFromRequest, secret);
             result.end(JSON.stringify({
                 success: true,
