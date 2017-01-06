@@ -100,7 +100,7 @@ app.post('/api/logout', function(request, result){
     });
     redis_client.del('TOKE' + request.body.jwt, function(err, succ){
         console.log('TOKEN ' + request.body.jwt + ' invalidated,\n\t\tREASON: logged out successfully.');
-        if(err!=null){
+        if(err==null){
             result.end(JSON.stringify({
                 success: true
             }));
@@ -129,7 +129,7 @@ app.post('/api/newuser', function(request, result){
             lastname:request.body.lastname,
             userid:'33'
         }), function(err, succ){
-            if(err!=null){
+            if(err==null){
                 console.log('Created user successfully e:' + request.body.email + ' p:' + request.body.password);
                 console.log('new user sha is ' + userUniqueKey);
                 console.log('\n\t\tREASON: user created successfully');
