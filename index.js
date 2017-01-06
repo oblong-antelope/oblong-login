@@ -16,11 +16,11 @@ redis_client.flushdb(function(err, succ){
 });
 
 redis_client.set(sha2('e.williamson@ic.ac.uk' + ':::' + 'bubbles123'),
-    {
+    JSON.stringify({
         title:'Miss',
         firstname:'Emily',
         lastname:'Williamson'
-    }, function(err, succ){
+    }), function(err, succ){
     console.log(succ);
 });
 
@@ -31,9 +31,9 @@ redis_client.set(sha2('e.williamson@ic.ac.uk' + ':::' + 'bubbles123'),
 var payload = { email: 'abc@def.ghi', password: 'ilovethemonkeyhead' };
 var secret = 'xxx';
 
-var token = jwt.encode(payload, secret);
+//var token = jwt.encode(payload, secret);
 
-var decoded = jwt.decode(token, secret);
+//var decoded = jwt.decode(token, secret);
 
 
 
@@ -47,14 +47,64 @@ app.use(bodyParser.json());
 app.get('/', function(request, result){
 });
 
-app.post('/', function(request, result){
-    console.log('I got it');
+app.post('/api/login', function(request, result){
     result.header('Access-Control-Allow-Origin', '*');
     result.header('Access-Control-Allow-Methods', 'POST');
     result.writeHead(200, {
         'Content-Type': 'text/plain'
     });
-    result.end('yo my boi');
+
+    var key = request.email + ':::' + request.password;
+
+    redis_client.keys(key, function(err, reply){
+        if(reply!=null){
+            console.log('success!');
+            var token = jwt.encode(request, secret);
+            result.end(JSON.stringify({
+                success: true,
+                jwt: token,
+                userid: '33'
+            }));
+        }else{
+            console.log('fail!');
+            result.end(JSON.stringify({
+                success: false
+            }));
+        }
+    });
+});
+
+app.post('/api/logout', function(request, result){
+    result.header('Access-Control-Allow-Origin', '*');
+    result.header('Access-Control-Allow-Methods', 'POST');
+    result.writeHead(200, {
+        'Content-Type': 'text/plain'
+    });
+    result.end(JSON.stringify({
+        success: true
+    }));
+});
+
+app.post('/api/newuser', function(request, result){
+    result.header('Access-Control-Allow-Origin', '*');
+    result.header('Access-Control-Allow-Methods', 'POST');
+    result.writeHead(200, {
+        'Content-Type': 'text/plain'
+    });
+
+
+    redis_client.set(sha2(request.email + ':::' + request.password),
+        JSON.stringify({
+            title:request.title,
+            firstname:request.firstname,
+            lastname:request.lastname
+        }), function(err, succ){
+            console.log(succ);
+    });
+
+    result.end(JSON.stringify({
+        success: true
+    }));
 });
 
 app.post('/captcha/', function(request, result){
