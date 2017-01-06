@@ -44,7 +44,14 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 ////////////////////////////////////////////////////
 
-//app.options('')
+
+app.options("/*", function(req, res, next){
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+    res.send(200);
+});
+
 
 app.get('/', function(request, result){
 });
@@ -58,9 +65,9 @@ app.post('/api/login', function(request, result){
 
     var key = request.email + ':::' + request.password;
 
-    redis_client.keys(key, function(err, reply){
+    redis_client.keys(sha2(key), function(err, reply){
         console.log(reply);
-        if(reply!=null){
+        if(reply!==[]){
             console.log('success!');
             var dataFromRequest = {email:request.email, password:request.password};
             var token = jwt.encode(dataFromRequest, secret);
