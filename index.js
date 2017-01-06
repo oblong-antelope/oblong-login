@@ -140,7 +140,7 @@ app.post('/api/userid', function(request, result){
 
     redis_client.get('TOKE' + request.body.jwt, function(err, reply){
         result.end(JSON.stringify({
-            'userid': reply
+            userid: reply
         }));
     });
 });
