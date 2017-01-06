@@ -56,16 +56,14 @@ app.options("/*", function(req, res, next){
 app.get('/', function(request, result){
 });
 
-app.post('/api/login', function(req, result){
+app.post('/api/login', function(request, result){
     result.header('Access-Control-Allow-Origin', '*');
     result.header('Access-Control-Allow-Methods', 'POST');
     result.writeHead(200, {
         'Content-Type': 'text/plain'
     });
 
-    var request = JSON.parse(req);
-
-    var key = request.email + ':::' + request.password;
+    var key = request.body.email + ':::' + request.body.password;
 
     console.log(sha2(key));
 
@@ -73,7 +71,7 @@ app.post('/api/login', function(req, result){
         console.log('aaaaaareply' + reply);
         if(reply!=null && reply!=={}){
             console.log('success!');
-            var dataFromRequest = {email:request.email, password:request.password};
+            var dataFromRequest = {email:request.body.email, password:request.body.password};
             var token = jwt.encode(dataFromRequest, secret);
             result.end(JSON.stringify({
                 success: true,
@@ -100,24 +98,23 @@ app.post('/api/logout', function(request, result){
     }));
 });
 
-app.post('/api/newuser', function(req, result){
+app.post('/api/newuser', function(request, result){
     result.header('Access-Control-Allow-Origin', '*');
     result.header('Access-Control-Allow-Methods', 'POST');
     result.writeHead(200, {
         'Content-Type': 'text/plain'
     });
 
-    var request = JSON.parse(req);
 
-    var userUniqueKey = sha2(request.email + ':::' + request.password);
+    var userUniqueKey = sha2(request.body.email + ':::' + request.body.password);
 
     redis_client.set(userUniqueKey,
         JSON.stringify({
-            title:request.title,
-            firstname:request.firstname,
-            lastname:request.lastname
+            title:request.body.title,
+            firstname:request.body.firstname,
+            lastname:request.body.lastname
         }), function(err, succ){
-            console.log('set user successfully ' + request.email + ' ' + request.password);
+            console.log('set user successfully ' + request.body.email + ' ' + request.body.password);
             console.log('new user sha is ' + userUniqueKey)
     });
 
