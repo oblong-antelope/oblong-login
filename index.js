@@ -139,9 +139,7 @@ app.post('/api/newuser', function(request, result){
             console.log('Error - More than 1 person match the firstname and lastname in the database');
         }
 
-
         var final_section = id_components[4];
-        console.log(id_components[4]);
 
         redis_client.set('USER' + userUniqueKey,
             JSON.stringify({
