@@ -131,7 +131,7 @@ app.post('/api/newuser', function(request, result){
     HTTPRequest(PEOPLE_ADDR + 'firstname=' + request.body.firstname
                             + '&lastname=' + request.body.lastname
                             , function (error, res, body) {
-        console.log(res);
+        console.log(res.body);
         console.log(body);
     });
 
