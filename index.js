@@ -115,7 +115,7 @@ app.post('/api/logout', function(request, result){
 
 //do a lookup on http://oblong-adventures.herokuapp.com/api/people/find?title=Mr&firstname=JOHN&lastname=smith&email=xxx
 //to find the person then associate it at new user creation time
-var PEOPLE_ADDR = 'http://oblong-adventures.herokuapp.com/api/people/find?';
+var PEOPLE_ADDR = 'http://battle.horse/oblong/api/people/find?';
 app.post('/api/newuser', function(request, result){
     result.header('Access-Control-Allow-Origin', '*');
     result.header('Access-Control-Allow-Methods', 'POST');
