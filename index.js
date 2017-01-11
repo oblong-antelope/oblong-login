@@ -131,32 +131,38 @@ app.post('/api/newuser', function(request, result){
     HTTPRequest(PEOPLE_ADDR + 'firstname=' + request.body.firstname
                             + '&lastname=' + request.body.lastname
                             , function (error, res, body) {
-        console.log(res.body);
+
         console.log(body);
+
+        if(body.length>=2){
+            console.log('Error - More than 1 person match the firstname and lastname in the database');
+        }
+
+        var id_components = body[0].split('/');
+        console.log(id_components);
+
+        redis_client.set('USER' + userUniqueKey,
+            JSON.stringify({
+                title:request.body.title,
+                firstname:request.body.firstname,
+                lastname:request.body.lastname,
+                userid:id_components[4]
+            }), function(err, succ){
+                if(err==null){
+                    console.log('Created user successfully e:' + request.body.email + ' p:' + request.body.password);
+                    console.log('new user sha is ' + userUniqueKey);
+                    console.log('\n\t\tREASON: user created successfully');
+                    result.end(JSON.stringify({
+                        success: true
+                    }));
+                }else{
+                    result.end(JSON.stringify({
+                        success: false
+                    }));
+                }
+        });
     });
 
-
-
-    redis_client.set('USER' + userUniqueKey,
-        JSON.stringify({
-            title:request.body.title,
-            firstname:request.body.firstname,
-            lastname:request.body.lastname,
-            userid:'33'
-        }), function(err, succ){
-            if(err==null){
-                console.log('Created user successfully e:' + request.body.email + ' p:' + request.body.password);
-                console.log('new user sha is ' + userUniqueKey);
-                console.log('\n\t\tREASON: user created successfully');
-                result.end(JSON.stringify({
-                    success: true
-                }));
-            }else{
-                result.end(JSON.stringify({
-                    success: false
-                }));
-            }
-    });
 });
 
 app.post('/api/tokendata', function(request, result){
