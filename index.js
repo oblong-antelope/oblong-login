@@ -133,12 +133,13 @@ app.post('/api/newuser', function(request, result){
                             , function (error, res, body) {
 
         console.log(body);
+        var id_components = body.split('/');
 
-        if(body.length>=2){
+        if(id_components.length>=6){
             console.log('Error - More than 1 person match the firstname and lastname in the database');
         }
 
-        var id_components = body.split('/');
+
         var final_section = id_components[4];
         console.log(id_components[4]);
 
