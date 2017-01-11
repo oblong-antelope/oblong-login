@@ -3,6 +3,7 @@ var jwt = require('jwt-simple');
 var captchapng = require('captchapng');
 var sha2 = require('js-sha256').sha256;
 var redis_client = require('redis').createClient(process.env.REDIS_URL);
+var HTTPRequest = require('request');
 var app = express();
 
 var PORT = process.env.PORT || 1140;
@@ -114,6 +115,7 @@ app.post('/api/logout', function(request, result){
 
 //do a lookup on http://oblong-adventures.herokuapp.com/api/people/find?title=Mr&firstname=JOHN&lastname=smith&email=xxx
 //to find the person then associate it at new user creation time
+var PEOPLE_ADDR = 'http://oblong-adventures.herokuapp.com/api/people/find?';
 app.post('/api/newuser', function(request, result){
     result.header('Access-Control-Allow-Origin', '*');
     result.header('Access-Control-Allow-Methods', 'POST');
@@ -123,6 +125,17 @@ app.post('/api/newuser', function(request, result){
 
 
     var userUniqueKey = sha2(request.body.email + ':::' + request.body.password);
+
+
+    //get the user id
+    HTTPRequest(PEOPLE_ADDR + 'firstname=' + request.body.firstname
+                            + '&lastname=' + request.body.lastname
+                            , function (error, res, body) {
+        console.log(res);
+        console.log(body);
+    });
+
+
 
     redis_client.set('USER' + userUniqueKey,
         JSON.stringify({
